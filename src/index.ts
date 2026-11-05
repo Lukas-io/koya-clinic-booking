@@ -70,10 +70,7 @@ const apiRoutes: Route[] = [
 const webRoutes: Route[] = [
   { pattern: /^\/web\/slots$/, handlers: { GET: listSlots } },
   { pattern: /^\/web\/bookings$/, handlers: { POST: createWebBooking } },
-  {
-    pattern: /^\/web\/bookings\/([^/]+)$/,
-    handlers: { GET: getBooking, DELETE: cancelBooking },
-  },
+  { pattern: /^\/web\/bookings\/([^/]+)$/, handlers: { DELETE: cancelBooking } },
 ];
 
 export default {

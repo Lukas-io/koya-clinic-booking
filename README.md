@@ -22,7 +22,6 @@ A clinic booking API and a small booking web page, served from one Cloudflare Wo
 
 - `GET /web/slots`
 - `POST /web/bookings` (also limited to 10 attempts per minute per `CF-Connecting-IP`, stored with subject `ip:<address>`)
-- `GET /web/bookings/{id}`
 - `DELETE /web/bookings/{id}`
 
 There is deliberately no public route for `/reset` or for listing bookings by email, since those would give anyone destructive access or other people's personal data. The IP limit applies only to the web route, so the API route is free of it. The page renders all data with `textContent`, and a Content-Security-Policy restricts it to its own origin.
