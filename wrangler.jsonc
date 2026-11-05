@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "koya-clinic-booking",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-04",
+  "durable_objects": {
+    "bindings": [{ "name": "CLINIC", "class_name": "Clinic" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Clinic"] }],
+  "observability": { "enabled": true }
+}
