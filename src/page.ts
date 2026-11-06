@@ -65,34 +65,40 @@ export const PAGE_HTML = String.raw`<!doctype html>
   .status-text:empty { display: none; }
   .days {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     margin-top: 24px;
-    padding: 2px 2px 8px;
+    padding: 4px;
+    background: #eef1f1;
+    border-radius: 12px;
     overflow-x: auto;
-    scrollbar-width: thin;
+    scrollbar-width: none;
   }
+  .days::-webkit-scrollbar { display: none; }
   .day {
-    flex: none;
-    width: 68px;
-    padding: 8px 0 10px;
+    flex: 1 0 56px;
+    padding: 8px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    line-height: 1.25;
+    gap: 2px;
+    line-height: 1.2;
     color: var(--ink);
-    background: var(--surface);
-    border: 1px solid var(--line-strong);
-    border-radius: 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 9px;
     cursor: pointer;
-    transition: background 0.12s, border-color 0.12s;
+    transition: background 0.12s, box-shadow 0.12s, color 0.12s;
   }
-  .day:hover { border-color: var(--accent); background: var(--accent-soft); }
-  .day-weekday, .day-month { font-size: 0.8125rem; }
-  .day-number { font-size: 1.25rem; font-weight: 700; }
-  .day.muted { color: var(--disabled-ink); background: var(--disabled-bg); border-color: var(--line); }
-  .day.muted:hover { border-color: var(--line-strong); background: #eef2f2; }
-  .day[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .day[aria-pressed="true"]:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .day:hover { background: rgba(255, 255, 255, 0.6); }
+  .day-weekday { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+  .day-number { font-size: 1.0625rem; font-weight: 650; }
+  .day.muted .day-number, .day.muted .day-weekday { color: var(--disabled-ink); }
+  .day[aria-pressed="true"] {
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(16, 40, 36, 0.08), 0 2px 8px rgba(16, 40, 36, 0.08);
+  }
+  .day[aria-pressed="true"] .day-number { color: var(--accent); }
+  .day[aria-pressed="true"] .day-weekday { color: var(--ink); }
   .day-label { font-size: 1rem; font-weight: 600; margin: 24px 0 12px; }
   #slots { display: grid; gap: 8px; }
   .slot {
@@ -426,7 +432,6 @@ export const PAGE_HTML = String.raw`<!doctype html>
     if (!group.slots.some(isBookable)) chip.classList.add("muted");
     chip.append(
       make("span", "day-weekday", date.toLocaleDateString(undefined, { weekday: "short" })),
-      make("span", "day-month", date.toLocaleDateString(undefined, { month: "short" })),
       make("span", "day-number", String(date.getDate()))
     );
     chip.addEventListener("click", () => chooseDay(group.key));
@@ -592,7 +597,7 @@ export const PAGE_HTML = String.raw`<!doctype html>
 
   function renderConfirmationHeader(confirmed) {
     setText("confirmation-heading", confirmed ? "You're all set" : "Booking cancelled");
-    setText("confirmation-lead", confirmed ? "Your appointment is booked." : "This appointment is cancelled.");
+    setText("confirmation-lead", confirmed ? "Your appointment is booked." : "The time is free again for someone else.");
     byId("confirmation-mark").classList.toggle("cancelled", !confirmed);
     byId("mark-path").setAttribute("d", confirmed ? CHECK_PATH : CROSS_PATH);
   }
@@ -638,7 +643,7 @@ export const PAGE_HTML = String.raw`<!doctype html>
 
   function handleCancelResult(result) {
     if (!result.reached) return setText("confirmation-message", NETWORK_MESSAGE);
-    if (result.status === 200) return markCancelled("Your booking has been cancelled and the time is free again.");
+    if (result.status === 200) return markCancelled("");
     if (result.status === 409) return markCancelled("This booking was already cancelled.");
     if (result.status === 404) return setText("confirmation-message", "We could not find this booking. It may have been removed.");
     setText("confirmation-message", SERVER_MESSAGE);
@@ -655,6 +660,7 @@ export const PAGE_HTML = String.raw`<!doctype html>
 
   setText("timezone", "Times shown in your timezone (" + TIMEZONE + ")");
   byId("booking-form").addEventListener("submit", onSubmit);
+  byId("booking-form").addEventListener("input", () => setText("form-error", ""));
   byId("cancel-booking").addEventListener("click", onCancel);
   byId("retry-slots").addEventListener("click", loadSlots);
   byId("back-from-form").addEventListener("click", () => goToSlots(""));
